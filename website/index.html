@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MD Clean | The Markdown Repair Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+    
+    <div id="app">
+      <header class="header">
+        <h1 class="logo">MD <span>Clean</span></h1>
+        <p class="tagline">Instantly fix broken, wrapped, and mangled Markdown copied from AI tools.</p>
+        <div class="badges">
+          <span class="badge">npm i -g mdclean</span>
+        </div>
+      </header>
+
+      <main class="editor-container">
+        <div class="panel input-panel">
+          <div class="panel-header">
+            <div class="mac-buttons">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="title">Messy Input (Paste here)</span>
+          </div>
+          <textarea id="input-md" placeholder="Paste your messy terminal markdown here...&#10;&#10;    **Key Changes:**&#10;    1. **Engine Architecture Overhaul:** Refactored `engine.ts` to use a robust `ExecutionTask` BFS queue rather than&#10;  sharing a single monolithic payload state."></textarea>
+        </div>
+
+        <div class="action-bar">
+          <button id="clean-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            Auto-Heal
+          </button>
+        </div>
+
+        <div class="panel output-panel">
+          <div class="panel-header">
+            <span class="title">Cleaned Markdown</span>
+            <button id="copy-btn">Copy</button>
+          </div>
+          <textarea id="output-md" readonly placeholder="Your cleaned, perfectly formatted markdown will appear here."></textarea>
+        </div>
+      </main>
+      
+      <footer>
+        <p>Built for developers who copy-paste too much. Open source on <a href="https://github.com/bijanmurmu/mdclean" target="_blank">GitHub</a>.</p>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
