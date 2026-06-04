@@ -1,67 +1,83 @@
-# MD Clean — Markdown Repair Tool
+<div align="center">
+  <img src="website/public/favicon.svg" width="100" height="100" alt="mdclean logo">
+  <h1>mdclean</h1>
+  <p><strong>The Markdown Repair Tool</strong></p>
+  <p>Instantly fix broken, wrapped, and malformed Markdown copied from AI tools or messy terminals.</p>
+</div>
 
-A versatile tool suite that takes messy copied Markdown from terminal-based AI tools, logs, or wrapped CLI output where line breaks and indentation get mangled, and automatically fixes it.
+<br>
 
-This repository contains two projects:
-1. **`cli/`** - The Command Line Interface tool
-2. **`website/`** - The beautifully designed, interactive web landing page
+## What is mdclean?
 
----
+If you frequently copy output from terminal-based AI tools (like Claude, ChatGPT wrappers, or raw CLI logs), you've likely dealt with "broken markdown."
+Terminals often hard-wrap text at 80 characters, causing line breaks in the middle of paragraphs. They also frequently inject random leading spaces that break nested lists and ruin indented code blocks.
 
-## 1. The CLI Tool
+**`mdclean`** is a toolsuite built to fix this instantly.
 
-The `mdclean` CLI is built for developers who constantly copy-paste from terminal AI tools and need an instant way to format their clipboard.
-
-### Key Features
-- **Markdown Auto-Healing**: Safely strips terminal artifacts, joins wrapped lines, preserves lists and code blocks.
-- **Clipboard Mode**: Reads the clipboard, cleans the markdown, and writes it back instantly.
-- **Pipe Support**: Read from `stdin` and write to `stdout`.
-
-### Installation
-
-```bash
-cd cli
-npm install -g .
-```
-
-### Usage
-
-```bash
-# Clipboard mode (Read -> Clean -> Write)
-mdclean --clipboard
-# Or use the short flag
-mdclean -c
-
-# Pipe Support
-cat messy.md | mdclean > clean.md
-
-# Interactive TUI Mode (Preview changes before writing to clipboard)
-mdclean
-```
+Instead of relying on fragile string concatenation (RegEx), `mdclean` uses a full **Abstract Syntax Tree (AST)** engine powered by `unified` and `remark`. It completely understands your document structure, allowing it to unwrap paragraphs and fix global indentation without destroying your intentional formatting.
 
 ---
 
-## 2. The Website (Landing Page)
+## 🚀 The Tools
 
-A stunning, glassmorphism-inspired web interface powered by Vite, HTML, and Vanilla TypeScript. It runs the exact same AST-based Auto-Healing logic entirely in the browser!
+This repository is a monorepo containing two core projects:
 
-### Running locally
+### 1. The Web Workspace (`/website`)
 
+A stunning, cyber-brutalist web application designed for developers. It runs the exact same AST-based Auto-Healing logic entirely in your browser.
+
+- **Dual Mode**: Features a clean landing page and a massive 100vh full-screen editor workspace.
+- **GitHub Preview**: Instantly compile your cleaned output to view it exactly as GitHub would render it.
+- **Tech Stack**: Vanilla TypeScript + Vite + `github-markdown-css`.
+
+#### Running Locally
 ```bash
 cd website
 npm install
 npm run dev
 ```
 
-### Deploying to Vercel
+### 2. The Command Line Interface (`/cli`)
 
-You can easily deploy this website to Vercel for free:
+Built for power users who want to fix markdown without leaving the terminal.
 
-1. Push this repository to your GitHub account.
-2. Go to [Vercel](https://vercel.com) and click **Add New Project**.
-3. Import your `mdclean` repository.
-4. **Crucial Step**: In the "Framework Preset" settings, choose **Vite**. 
-5. In the "Root Directory" settings, click Edit and select `website`.
-6. Click **Deploy**!
+#### Installation
+```bash
+cd cli
+npm install -g .
+```
 
-That's it! Your landing page will be instantly live with a clean Vercel URL.
+#### Usage
+```bash
+# Clipboard Mode: Reads clipboard -> Cleans AST -> Writes back to clipboard
+mdclean -c
+
+# Pipe Mode: Standard unix streams
+cat messy.md | mdclean > clean.md
+
+# TUI Mode: Interactive terminal UI
+mdclean
+```
+
+---
+
+## 🧠 How the Engine Works
+
+The core cleaning engine (found in `website/src/cleaner.ts` and mirrored in the CLI) executes a multi-pass process:
+
+1. **Global Indentation Normalization**: Detects the common "1-extra-space" bug caused by AI chatbots and intelligently strips it only if it's safe to do so.
+2. **AST Parsing**: Converts the raw text into a mdast (Markdown Abstract Syntax Tree).
+3. **Smart Un-wrapping**: Walks the AST to find `paragraph` nodes (including those inside `listItem` or `blockquote` nodes) and converts soft-breaks into spaces, perfectly healing hard-wrapped terminal outputs.
+4. **Re-Stringification**: Compiles the AST back into perfectly canonical, standard markdown.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Please read our [Contributing Guidelines](CONTRIBUTING.md) to learn about our workflow, which prioritizes local testing and batched end-of-day Pull Requests.
+
+Please also ensure you follow our [Code of Conduct](CODE_OF_CONDUCT.md) in all interactions.
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).

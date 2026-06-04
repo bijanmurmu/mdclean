@@ -2,58 +2,79 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MD Clean | The Markdown Repair Tool</title>
+    
+    <!-- SEO Optimization -->
+    <title>mdclean</title>
+    <meta name="description" content="mdclean — The Markdown Repair Tool. Instantly fix broken, wrapped, and malformed Markdown copied from AI tools or messy terminals." />
+    <meta name="keywords" content="markdown, repair, tool, clean, format, AI, unwrap, codeblock" />
+    <meta name="author" content="Bijan Murmu" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="mdclean - The Markdown Repair Tool" />
+    <meta property="og:description" content="Instantly fix broken, wrapped, and malformed Markdown copied from AI tools or messy terminals." />
+    <meta property="og:type" content="website" />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-    <div class="bg-orb orb-3"></div>
+    <!-- Background grid -->
+    <div class="grid-bg"></div>
     
-    <div id="app">
-      <header class="header">
-        <h1 class="logo">MD <span>Clean</span></h1>
-        <p class="tagline">Instantly fix broken, wrapped, and mangled Markdown copied from AI tools.</p>
-        <div class="badges">
-          <span class="badge">npm i -g mdclean</span>
+    <div class="layout-wrapper">
+      <header class="top-nav">
+        <div class="brand">mdclean</div>
+        <div class="nav-links">
+          <a href="https://github.com/bijanmurmu/mdclean" target="_blank" class="nav-link">GitHub ↗</a>
         </div>
       </header>
 
-      <main class="editor-container">
-        <div class="panel input-panel">
-          <div class="panel-header">
-            <div class="mac-buttons">
-              <span></span><span></span><span></span>
+      <main class="main-content">
+        <div class="hero">
+          <h1 class="headline">REPAIR<br>MANGLED<br>MARKDOWN.</h1>
+          <p class="subhead">Instantly fix broken, wrapped, and malformed Markdown copied from AI tools or messy terminals.</p>
+          
+          <div class="hero-actions">
+            <a href="/editor.html" class="primary-btn launch-btn">
+              <span>LAUNCH WORKSPACE</span>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <div class="command-box">
+              <span class="prompt">$</span> <span id="install-cmd">npm i -g mdclean</span>
+              <button class="cmd-copy-btn" id="cmd-copy-btn" title="Copy to clipboard">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
             </div>
-            <span class="title">Messy Input (Paste here)</span>
           </div>
-          <textarea id="input-md" placeholder="Paste your messy terminal markdown here...&#10;&#10;    **Key Changes:**&#10;    1. **Engine Architecture Overhaul:** Refactored `engine.ts` to use a robust `ExecutionTask` BFS queue rather than&#10;  sharing a single monolithic payload state."></textarea>
         </div>
 
-        <div class="action-bar">
-          <button id="clean-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-            Auto-Heal
-          </button>
-        </div>
-
-        <div class="panel output-panel">
-          <div class="panel-header">
-            <span class="title">Cleaned Markdown</span>
-            <button id="copy-btn">Copy</button>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">01</div>
+            <h3>LINE UN-WRAPPING</h3>
+            <p>Automatically detects and fixes paragraphs that were hard-wrapped by terminals.</p>
           </div>
-          <textarea id="output-md" readonly placeholder="Your cleaned, perfectly formatted markdown will appear here."></textarea>
+          <div class="feature-card">
+            <div class="feature-icon">02</div>
+            <h3>CODEBLOCK REPAIR</h3>
+            <p>Restores broken code fences and standardizes language tags for clean syntax highlighting.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">03</div>
+            <h3>LIST ALIGNMENT</h3>
+            <p>Fixes corrupted nested lists and normalizes bullet points across the entire document.</p>
+          </div>
         </div>
       </main>
       
-      <footer>
-        <p>Built for developers who copy-paste too much. Open source on <a href="https://github.com/bijanmurmu/mdclean" target="_blank">GitHub</a>.</p>
+      <footer class="site-footer">
+        <p>Built for developers. Open source on <a href="https://github.com/bijanmurmu/mdclean" target="_blank">GitHub</a>.</p>
       </footer>
     </div>
+    
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

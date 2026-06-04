@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "bin": {
-    "mdclean": "./dist/index.js"
+    "mdclean": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",

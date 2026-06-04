@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Optimization -->
+    <title>mdclean</title>
+    <meta name="robots" content="noindex, nofollow" /> <!-- Workspace shouldn't be indexed directly -->
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="editor-body">
+    <div class="grid-bg"></div>
+    
+    <div class="editor-layout">
+      <header class="top-nav editor-nav">
+        <div class="brand"><a href="/" style="color: inherit; text-decoration: none;">mdclean <span style="color: var(--muted); font-weight: 400;">/ workspace</span></a></div>
+        <div class="nav-links">
+          <a href="/" class="nav-link">← BACK</a>
+        </div>
+      </header>
+
+      <main class="workspace-full">
+        <div class="editor-col">
+          <div class="col-header">
+            <span class="col-title">INPUT.MD</span>
+            <span class="col-badge">RAW</span>
+          </div>
+          <textarea id="input-md" placeholder="Paste messy markdown here..."></textarea>
+        </div>
+
+        <div class="action-col vertical-actions">
+          <button id="clean-btn" class="primary-btn icon-only" title="Compile & Clean">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            <span class="btn-text">CLEAN</span>
+          </button>
+        </div>
+
+        <div class="editor-col">
+          <div class="col-header">
+            <span class="col-title">OUTPUT.MD</span>
+            <div class="col-actions">
+              <div class="view-tabs">
+                <button id="view-raw" class="tab-btn active">RAW</button>
+                <button id="view-preview" class="tab-btn">PREVIEW</button>
+              </div>
+              <button id="copy-btn" class="ghost-btn">COPY</button>
+            </div>
+          </div>
+          <div class="output-container">
+            <textarea id="output-md" readonly placeholder="Clean output..."></textarea>
+            <div id="output-preview" class="markdown-body" style="display: none;"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+    
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
