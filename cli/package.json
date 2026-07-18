@@ -1,6 +1,6 @@
 {
   "name": "mdclean",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Markdown Repair CLI for messy copied Markdown",
   "main": "dist/index.js",
   "type": "module",
@@ -34,5 +34,10 @@
     "remark-stringify": "^11.0.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "remark-gfm": "^4.0.1",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0"
   }
 }

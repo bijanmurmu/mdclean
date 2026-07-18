@@ -17,7 +17,7 @@ To keep our commit history clean and our repository stable, we follow a strict *
 ## 🏗 Getting Started
 
 1. Fork the repository on GitHub.
-2. Clone your fork locally: `git clone https://github.com/YOUR_USERNAME/mdclean.git`
+2. Clone your fork locally: `git clone https://github.com/bijanmurmu/mdclean.git`
 3. If you are working on the Web Workspace:
    ```bash
    cd website

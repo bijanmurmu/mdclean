@@ -1,29 +1,67 @@
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkStringify from 'remark-stringify';
+import remarkGfm from 'remark-gfm';
 import { visit } from 'unist-util-visit';
+import remarkHtml from 'remark-html';
 
-// Fix the issue where copying from AI/terminals adds 1 leading space to every single line
 function fixGlobalIndentation(text: string): string {
   const lines = text.split('\n');
   const nonEmptyLines = lines.filter(l => l.trim().length > 0);
   if (nonEmptyLines.length === 0) return text;
   
-  // Check if ALL non-empty lines start with at least one space
-  const allIndented = nonEmptyLines.every(l => l.startsWith(' '));
-  if (allIndented) {
-    return lines.map(l => l.startsWith(' ') ? l.substring(1) : l).join('\n');
+  let minIndent = Infinity;
+  for (const line of nonEmptyLines) {
+    const match = line.match(/^ +/);
+    if (match) {
+      minIndent = Math.min(minIndent, match[0].length);
+    } else {
+      minIndent = 0;
+      break;
+    }
+  }
+
+  if (minIndent > 0) {
+    return lines.map(l => l.length > 0 ? l.substring(minIndent) : l).join('\n');
   }
   return text;
 }
 
-// AST Plugin to join hard-wrapped lines inside paragraphs
+export function fixIndentedCodeBlocks(tree: any, fileContent: string) {
+  function walk(node: any, parent: any, index: number) {
+    if (node.type === 'code' && !node.lang && node.position) {
+      const startOffset = node.position.start.offset;
+      const endOffset = node.position.end.offset;
+      const originalText = fileContent.substring(startOffset, endOffset);
+      
+      if (!originalText.trimStart().startsWith('```') && !originalText.trimStart().startsWith('~~~')) {
+        const parsed = unified().use(remarkParse).parse(node.value);
+        fixIndentedCodeBlocks(parsed, node.value);
+        if (parent && parent.children) {
+            parent.children.splice(index, 1, ...parsed.children);
+            return true;
+        }
+      }
+    }
+
+    if (node.children) {
+      for (let i = 0; i < node.children.length; i++) {
+        if (walk(node.children[i], node, i)) {
+          i--;
+        }
+      }
+    }
+    return false;
+  }
+  
+  walk(tree, null, 0);
+}
+
 function unwrapParagraphs() {
   return (tree: any) => {
     visit(tree, 'paragraph', (node: any) => {
       visit(node, 'text', (textNode: any) => {
-        // Replace internal newlines in paragraph text with spaces
-        textNode.value = textNode.value.replace(/\n/g, ' ');
+        textNode.value = textNode.value.replace(/\n(?!\s*\|)/g, ' ');
       });
     });
   };
@@ -34,6 +72,10 @@ export async function cleanMarkdown(input: string): Promise<string> {
 
   const processor = unified()
     .use(remarkParse)
+    .use(() => (tree: any) => {
+      fixIndentedCodeBlocks(tree, preProcessed);
+    })
+    .use(remarkGfm)
     .use(unwrapParagraphs)
     .use(remarkStringify, {
       bullet: '*',
@@ -44,10 +86,8 @@ export async function cleanMarkdown(input: string): Promise<string> {
     });
 
   const file = await processor.process(preProcessed);
-  return String(file).trim() + '\n';
+  return String(file).trim().replace(/\\_/g, '_').replace(/\\\|/g, '|') + '\n';
 }
-
-import remarkHtml from 'remark-html';
 
 export async function renderHtml(input: string): Promise<string> {
   const processor = unified()

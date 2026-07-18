@@ -1,67 +1,32 @@
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkStringify from 'remark-stringify';
+import remarkGfm from 'remark-gfm';
+import { visit } from 'unist-util-visit';
 
-function preProcessMarkdown(text: string): string {
-  text = text.replace(/\r\n/g, '\n');
+function fixGlobalIndentation(text: string): string {
   const lines = text.split('\n');
-  let inFenced = false;
-  const processed: string[] = [];
+  const nonEmptyLines = lines.filter(l => l.trim().length > 0);
+  if (nonEmptyLines.length === 0) return text;
   
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (line.trim().startsWith('```') || line.trim().startsWith('~~~')) {
-      inFenced = !inFenced;
-      processed.push(line);
-      continue;
-    }
-    
-    if (inFenced) {
-      processed.push(line);
-      continue;
-    }
-    
-    const trimmed = line.trimStart();
-    if (trimmed === '') {
-      processed.push('');
-      continue;
-    }
-    
-    const isListItem = /^(\*|-|\d+\.)\s/.test(trimmed);
-    const isHeading = /^#+\s/.test(trimmed);
-    const isBlockquote = /^>\s/.test(trimmed);
-    const isHtml = /^<[a-zA-Z\/]/.test(trimmed);
-    
-    const prevLine = processed.length > 0 ? processed[processed.length - 1] : '';
-    const prevIsHeading = /^#+\s/.test(prevLine.trimStart());
-    const prevIsEmpty = prevLine.trim() === '';
-    const prevIsListItem = /^(\*|-|\d+\.)\s/.test(prevLine.trimStart());
-    
-    if (!isListItem && !isHeading && !isBlockquote && !isHtml) {
-      if (!prevIsEmpty && !prevIsHeading) {
-        processed[processed.length - 1] += ' ' + trimmed;
-      } else {
-        processed.push(trimmed);
-      }
-    } else if (isListItem) {
-      if (!prevIsListItem && !prevIsEmpty && !prevIsHeading) {
-         processed.push('');
-      }
-      const indentMatch = line.match(/^\s+/);
-      const indentStr = indentMatch ? indentMatch[0] : '';
-      const safeIndent = indentStr.replace(/    /g, '  ');
-      processed.push(safeIndent + trimmed);
+  let minIndent = Infinity;
+  for (const line of nonEmptyLines) {
+    const match = line.match(/^ +/);
+    if (match) {
+      minIndent = Math.min(minIndent, match[0].length);
     } else {
-      processed.push(trimmed);
+      minIndent = 0;
+      break;
     }
   }
-  
-  return processed.join('\n');
+
+  if (minIndent > 0) {
+    return lines.map(l => l.length > 0 ? l.substring(minIndent) : l).join('\n');
+  }
+  return text;
 }
 
-export function fixIndentedCodeBlocks(tree: any, file: any) {
-  const fileContent = String(file.value);
-
+export function fixIndentedCodeBlocks(tree: any, fileContent: string) {
   function walk(node: any, parent: any, index: number) {
     if (node.type === 'code' && !node.lang && node.position) {
       const startOffset = node.position.start.offset;
@@ -70,7 +35,7 @@ export function fixIndentedCodeBlocks(tree: any, file: any) {
       
       if (!originalText.trimStart().startsWith('```') && !originalText.trimStart().startsWith('~~~')) {
         const parsed = unified().use(remarkParse).parse(node.value);
-        fixIndentedCodeBlocks(parsed, { value: node.value });
+        fixIndentedCodeBlocks(parsed, node.value);
         if (parent && parent.children) {
             parent.children.splice(index, 1, ...parsed.children);
             return true;
@@ -91,14 +56,26 @@ export function fixIndentedCodeBlocks(tree: any, file: any) {
   walk(tree, null, 0);
 }
 
+function unwrapParagraphs() {
+  return (tree: any) => {
+    visit(tree, 'paragraph', (node: any) => {
+      visit(node, 'text', (textNode: any) => {
+        textNode.value = textNode.value.replace(/\n(?!\s*\|)/g, ' ');
+      });
+    });
+  };
+}
+
 export async function cleanMarkdown(input: string): Promise<string> {
-  const preProcessed = preProcessMarkdown(input);
+  const preProcessed = fixGlobalIndentation(input.replace(/\r\n/g, '\n'));
 
   const processor = unified()
     .use(remarkParse)
     .use(() => (tree: any) => {
-      fixIndentedCodeBlocks(tree, { value: preProcessed });
+      fixIndentedCodeBlocks(tree, preProcessed);
     })
+    .use(remarkGfm)
+    .use(unwrapParagraphs)
     .use(remarkStringify, {
       bullet: '*',
       emphasis: '*',
@@ -108,5 +85,5 @@ export async function cleanMarkdown(input: string): Promise<string> {
     });
 
   const file = await processor.process(preProcessed);
-  return String(file).trim() + '\n';
+  return String(file).trim().replace(/\\_/g, '_').replace(/\\\|/g, '|') + '\n';
 }
